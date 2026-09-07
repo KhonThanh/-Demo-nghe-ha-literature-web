@@ -67,8 +67,8 @@ function initToggleSystem(configs = []) {
 
     // bind sự kiện click cho từng trigger (chỉ bind 1 lần)
     triggers.forEach((trigger, idx) => {
-      if (trigger.dataset._toggleBound === "true") return;
-      trigger.dataset._toggleBound = "true";
+      if (trigger._toggleBound) return;
+      trigger._toggleBound = true;
 
       trigger.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -568,8 +568,8 @@ function validateForm(form) {
 
 function initFormValidation(root = document) {
   root.querySelectorAll(".js-validate-form").forEach(form => {
-    if (form.dataset._validated) return;
-    form.dataset._validated = "true";
+    if (form._validated) return;
+    form._validated = true;
 
     form.querySelectorAll("input, textarea").forEach(input => {
       input.addEventListener("input", () => validateField(input));
@@ -832,7 +832,7 @@ document.addEventListener("DOMContentLoaded", () => {
       minSlides: 6,
 
       loop: false,
-      autoplay: false, 
+      autoplay: false,
 
       navigation: { nextEl: '.custom-next-btn', prevEl: '.custom-prev-btn' },
       pagination: { el: '.custom-dots', clickable: true },
@@ -861,8 +861,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initToggleSystem([
       {
-        trigger: ".menu-container__bar",
-        target: ".m-menu",
+        trigger: ".menu-toggle__button",
+        target: ".menu-navigation__content",
         behavior: "toggle",
         activeClass: "active",
         closeOnOutside: true,
