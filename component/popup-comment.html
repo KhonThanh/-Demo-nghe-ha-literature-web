@@ -1,0 +1,69 @@
+<div class="popup-comment__content container-ts z-index-3 bg-white item-padding-40 border-radius-10">
+    <form class="flex flex-col gap-20 js-validate-form" data-_validated="true">
+        <div class="popup-comment__header flex jus-sb">
+            <div class="flex flex-col gap-">
+                <span class="text-color-deactive italic text-sm">CUNG CẤP PHẢN HỒI</span>
+                <h2 class="uppercase bold">Viết phần đánh giá</h2>
+            </div>
+            <div class="popup-comment__close bg-deactive border-radius-5 center-ver center-hor">
+                <img src="./img/icon/close.svg" class="img-content" alt="">
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">Họ và tên</label>
+                <input type="text" placeholder="John Architect" required="" data-msg="Vui lòng nhập họ tên"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">Email</label>
+                <input type="email" placeholder="name@architect.core" required=""
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">Số điện thoại</label>
+                <input type="text" placeholder="Số điện thoại" required="" pattern="^[0-9]{10,11}$"
+                    data-msg="SĐT phải có 10-11 số"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">Địa chỉ</label>
+                <input type="text" placeholder="Địa chỉ" required=""
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-10 form-group">
+            <label class="bold">Nội dung</label>
+            <textarea rows="4" required="" minlength="10" data-msg="Nội dung phải ít nhất 10 ký tự"
+                class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view"></textarea>
+            <span class="error-msg text-red text-xs"></span>
+        </div>
+
+        <div class="flex flex-col gap-10 form-group">
+            <label class="bold">Mã bảo mật</label>
+            <input type="text" required=""
+                class="item-padding-10-20 border-radius-5 bg-white-second border-none fill-view">
+            <span class="error-msg text-red text-xs"></span>
+        </div>
+
+        <div class="flex gap-20">
+            <button type="submit"
+                class="bg-white text-color-primary border-radius-5 bold uppercase cursor-pointer btn-submit-large border-none">
+                Hủy &nbsp; →
+            </button>
+            <button type="submit"
+                class="bg-primary text-color-white border-radius-5 bold uppercase cursor-pointer btn-submit-large border-none">
+                Gửi đánh giá &nbsp; →
+            </button>
+        </div>
+    </form>
+</div>
