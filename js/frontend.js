@@ -870,10 +870,9 @@ document.addEventListener("DOMContentLoaded", () => {
         innerSelector: ".m-menu__link"
       },
       {
-        trigger: ".pagination-wrapper .pagination-btn",
+        trigger: ".btn-filter",
         behavior: "activate",
         activeClass: "active",
-        groupSelector: ".pagination-wrapper .pagination-btn",
       },
       {
         trigger: ".btn-write-review",

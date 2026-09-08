@@ -71,33 +71,126 @@
 }
 
 /* css index */
-.sec-hero__thumb{
-    flex: 0 0 30%;
+.sec-hero__thumb {
+    flex:  0 0 35%;
+    height: 100%;
 }
 
-.sec-hero__infoƠ{
-    flex: 0 0 70%;
+.sec-hero__info {
+    flex: 1 1 auto;
+    padding:  40px;
 }
+
+.sec-hero__title {
+    font-size: calc(var(--font-size-base) + 28px);
+    text-transform: capitalize;
+}
+
+.sec-hero__penname {
+    font-size: calc(var(--font-size-base) - 4px);
+    text-transform: capitalize;
+}
+
+.sec-hero__quote {
+    padding: 30px;
+    border-left: 5px solid var(--primary-color);
+}
+
+.sec-hero__quote p {
+    font-size: calc(var(--font-size-base) + 8px);
+    font-weight: bold;
+}
+
+.sec-hero__content {
+    border: 1px solid var(--bg-creamy-color);
+}
+
+.sec-hero__actions{
+    padding-top: 20px;
+    margin-top: 10px;
+    border-top: 1px solid var(--primary-color);
+}
+
+.sec-hero__main-title {
+    font-size: calc(var(--font-size-base) + 28px);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--bg-creamy-color);
+}
+
+.btn-filter {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: var(--gray-color-light, #f5f5f5);
+    border-radius: 50px;
+    color: var(--text-color-deactive, #666);
+    transition: all 0.25s ease;
+}
+
+.btn-filter:hover,
+.btn-filter.active {
+    background-color: var(--primary-color, #2b1f1d);
+    color: var(--white-color, #fff);
+    border-color: var(--primary-color, #2b1f1d);
+}
+
+.sec-hero__card {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sec-news__thumb {
+    flex: 0 0 60%;
+    aspect-ratio: 837.5 / 471;
+}
+
+.sec-hero__overlay-badge {
+    bottom: 20px;
+    left: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.sec-news__title {
+    font-size: calc(var(--font-size-base) + 10px);
+}
+
+.sec-hero__desc {
+    line-height: 1.6;
+}
+
+.bg-primary-light {
+    background-color: rgba(43, 31, 29, 0.08);
+}
+
+.border-top {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sec-hero__footer {
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--bg-creamy-color);
+}
+
+
 
 /* css footer */
 .footer-padding {
     padding: 60px 0;
 }
 
-.social-icon{
+.social-icon {
     max-width: 32px;
 }
 
-.footer-container{
+.footer-container {
     border-bottom: 1px solid var(--gray-color);
     padding-bottom: 20px;
 }
 
-.footer-logo{
+.footer-logo {
     aspect-ratio: 445 / 90;
     max-width: 304px;
     min-height: 90px;
 }
+
 /* css roll to top */
 .btntotop__container {
     position: fixed;
