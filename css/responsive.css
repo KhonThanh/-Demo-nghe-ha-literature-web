@@ -18,12 +18,11 @@
     }
 
     .sec-hero__thumb {
-        flex: 0 0 auto;
-        width: 100%;
-        aspect-ratio:  357 / 266;
-        height: fit-content;
+        flex: 0 0 35%;
+        aspect-ratio: 357 / 266 !important;
+        height: 100%;
     }
-    
+
 
     .sec-hero__info {
         padding: 25px 20px;
@@ -54,17 +53,26 @@
         justify-content: space-between !important;
     }
 
-    .sec-hero__content{
+    .sec-hero__content {
         flex-direction: column;
     }
 
     .sec-hero__thumb,
     .sec-hero__info {
         flex: 1 0 auto;
+        width: 100%;
     }
 
-    .hero__actions a{
+    .sec-news__thumb {
+        width: 100%;
+    }
+
+    .hero__actions a {
         flex: 1 0 auto;
+    }
+
+    .detail-head__title {
+        font-size: calc(var(--font-size-base) * 2);
     }
 }
 
@@ -80,20 +88,60 @@
         padding: 30px 0px !important;
     }
 
+    .section-video__container,
+    .latest-publications__body {
+        flex-direction: column;
+    }
+
+    .video-sidebar,
+    .topic-sidebar,
+    .latest-publications__list {
+        width: 100% !important;
+    }
+
+    .detail-content blockquote p,
+    .detail-head__sapo {
+        font-size: calc(var(--font-size-base) + 4px);
+    }
+
+    .detail-content figure {
+        padding-bottom: 40px;
+    }
+
+    .video-card-sm__content h3 {
+        font-size: calc(var(--font-size-base) + 3px);
+    }
+
+    .section-video__title{
+        font-size: calc(var(--font-size-base) + 8px);
+    }
 }
 
 /* 
 @media screen and (max-width : 700px) {} */
 
+@media screen and (max-width: 650px) {
+    .option-filter__container {
+        max-width: unset;
+    }
+
+    .detail-content p,
+    .detail-content,
+    .detail-content blockquote p,
+    .detail-head__sapo {
+        font-size: calc(var(--font-size-base) - 4px);
+    }
+}
+
 @media screen and (max-width: 600px) {
-    .sec-hero__title{
+    .sec-hero__title {
         font-size: calc(var(--font-size-base) + 16px);
     }
 
-    .sec-hero__quote p{
+    .sec-hero__quote p {
         font-size: calc(var(--font-size-base) + 2px);
     }
-} 
+}
 
 @media screen and (max-width: 590px) {
     header {
@@ -102,7 +150,19 @@
 
 }
 
-/* 
-@media screen and (max-width: 551px) {} */
+@media screen and (max-width: 551px) {
+    .author-box {
+        flex-direction: column;
+        align-items: start !important;
+    }
+
+    .detail-head__title {
+        font-size: calc(var(--font-size-base) + 8px);
+    }
+
+    .video-card-sm__content h3 {
+        font-size: calc(var(--font-size-base) - 4px) ;
+    }
+}
 
 /* @media screen and (max-width: 480px) {} */

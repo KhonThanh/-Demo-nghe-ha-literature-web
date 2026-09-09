@@ -3,6 +3,7 @@
 /* ========================================== */
 .bg-primary { background-color: var(--primary-color); }
 .bg-white { background-color: var(--white-color); }
+.bg-creamy { background-color: var(--bg-creamy-color);}
 .bg-white-secondary { background-color: var(--second-white-color); }
 .bg-light-purple { background-color: var(--bg-light-purple); }
 .bg-light-blue { background-color: var(--bg-light-blue); }
@@ -49,7 +50,7 @@
 
 .m-0 { margin: 0 !important; }
 
-.container-padding { padding: 60px 0px; }
+.container-padding { padding: 40px 0px; }
 .container-padding-bottom { padding: 0px 0px 60px; }
 .item-padding-5 { padding: 5px; }
 .item-padding-10 { padding: 10px; }
@@ -118,6 +119,7 @@
 
 .fill-view { width: 100%;}
 .fill-height { height: 100%;}
+.fit-height { height: fit-content;}
 .fill-height-auto {height: auto !important}
 .overflow-hidden {overflow: hidden;}
 .cursor-pointer { cursor: pointer; }

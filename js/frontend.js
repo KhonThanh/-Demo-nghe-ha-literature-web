@@ -582,58 +582,46 @@ function initFormValidation(root = document) {
 }
 
 // js add active định vị ở menu
-function initUniversalActiveMenu(menuSelector = '', activeClassName = 'active') {
-  const currentUrl = window.location.href.split(/[?#]/)[0];
+function initUniversalActiveMenu(containerSelector, activeClass = 'active') {
+  const containers = document.querySelectorAll(containerSelector);
+  if (!containers.length) return;
 
-  const menuLinks = document.querySelectorAll(`${menuSelector} a`);
-  let bestMatch = null;
-  let longestMatchLength = 0;
+  // Lấy tên file hiện tại từ URL (vd: literature.html hoặc index.html)
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
 
-  menuLinks.forEach(link => {
-    const hrefAttr = link.getAttribute('href');
-    if (!hrefAttr || hrefAttr.startsWith('#') || hrefAttr.startsWith('javascript')) return;
-    const linkUrl = link.href.split(/[?#]/)[0];
+  containers.forEach(container => {
+    const links = container.querySelectorAll('a');
+    let matched = false;
 
-    // ==========================================
-    // VŨ KHÍ MỚI: Bắt theo keyword từ data-match
-    // ==========================================
-    const matchKeyword = link.getAttribute('data-match');
-    if (matchKeyword && currentUrl.includes(matchKeyword)) {
-      bestMatch = link;
-      longestMatchLength = 9999; // Cấp quyền ưu tiên tuyệt đối, khỏi check mấy cái dưới
-      return;
-    }
+    links.forEach(link => {
+      const href = link.getAttribute('href') || '';
 
-    // Logic cũ (Vẫn giữ để chạy cho các trang bình thường không có data-match)
-    if (currentUrl === linkUrl) {
-      bestMatch = link;
-      longestMatchLength = linkUrl.length;
-    } else if (currentUrl.startsWith(linkUrl)) {
-      const isHomePage = linkUrl.endsWith('/') || linkUrl.endsWith('index.html') || linkUrl.endsWith('/en') || linkUrl.endsWith('/kn');
-
-      if (!isHomePage && linkUrl.length > longestMatchLength) {
-        bestMatch = link;
-        longestMatchLength = linkUrl.length;
+      // Bỏ qua các link javascript:void(0) hoặc rỗng
+      if (!href || href.startsWith('javascript')) {
+        link.classList.remove(activeClass);
+        return;
       }
-    }
-  });
 
-  if (bestMatch) {
-    bestMatch.classList.add(activeClassName);
-    const parentMenu = bestMatch.closest(menuSelector);
-    if (parentMenu) parentMenu.classList.add(activeClassName);
-  } else {
-    const homeLink = Array.from(menuLinks).find(link => {
-      const lUrl = link.href.split(/[?#]/)[0];
-      return lUrl.endsWith('/') || lUrl.endsWith('index.html') || lUrl.endsWith('/en') || lUrl.endsWith('/kn');
+      const linkPath = href.split('/').pop();
+
+      if (linkPath === currentPath) {
+        link.classList.add(activeClass);
+        matched = true;
+      } else {
+        link.classList.remove(activeClass);
+      }
     });
 
-    if (homeLink) {
-      homeLink.classList.add(activeClassName);
-      const parentMenu = homeLink.closest(menuSelector);
-      if (parentMenu) parentMenu.classList.add(activeClassName);
+    // Nếu ở trang chủ hoặc không khớp link nào, tự active link index.html
+    if (!matched) {
+      links.forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (href.includes('index.html')) {
+          link.classList.add(activeClass);
+        }
+      });
     }
-  }
+  });
 }
 
 // Hàm tự động quét và gắn hiệu ứng Zoom
@@ -875,6 +863,11 @@ document.addEventListener("DOMContentLoaded", () => {
         activeClass: "active",
       },
       {
+        trigger: ".pagination-btn",
+        behavior: "activate",
+        activeClass: "active",
+      },
+      {
         trigger: ".btn-write-review",
         target: ".popup-comment__container",
         behavior: "toggle",
@@ -899,8 +892,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyImageEnhancements();
     initRevealEffect();
     initFormValidation();
-    initUniversalActiveMenu('.header-bottom__item', 'active');
-
+    initUniversalActiveMenu('.menu-bottom__nav, .menu-navigation__content', 'active');
     initStarRating('.popup-comment__content .rate-stars', '.star', 'active');
   });
 });

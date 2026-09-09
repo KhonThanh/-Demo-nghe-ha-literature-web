@@ -1,53 +1,58 @@
+/* 100 - Thin */
 @font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro Regular'), local('BeVietnamPro-Regular'),
-       url('../../font/BeVietnamPro-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro Thin'), local('BeVietnamPro-Thin'),
+         url('../../font/BeVietnamPro-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* 200 - ExtraLight */
+@font-face {
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro ExtraLight'), local('BeVietnamPro-ExtraLight'),
+         url('../../font/BeVietnamPro-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro Italic'), local('BeVietnamPro-Italic'),
-       url('../../font/BeVietnamPro-Italic.ttf') format('truetype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro Regular'), local('BeVietnamPro-Regular'),
+         url('../../font/BeVietnamPro-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
+/* 500 - Medium */
 @font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro Medium'), local('BeVietnamPro-Medium'),
-       url('../../font/BeVietnamPro-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro Medium'), local('BeVietnamPro-Medium'),
+         url('../../font/BeVietnamPro-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
 
+/* 800 - ExtraBold */
 @font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro SemiBold'), local('BeVietnamPro-SemiBold'),
-       url('../../font/BeVietnamPro-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro ExtraBold'), local('BeVietnamPro-ExtraBold'),
+         url('../../font/BeVietnamPro-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
 }
 
+/* 900 - Black */
 @font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro Bold'), local('BeVietnamPro-Bold'),
-       url('../../font/BeVietnamPro-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'BeVietnamPro';
-  src: local('BeVietnamPro Light'), local('BeVietnamPro-Light'),
-       url('../../font/BeVietnamPro-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'BeVietnamPro';
+    src: local('BeVietnamPro Black'), local('BeVietnamPro-Black'),
+         url('../../font/BeVietnamPro-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
 }

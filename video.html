@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Văn hóa Nghệ Hà | Video</title>
+    <link rel="icon" type="image/png" href="./img/logo/logo-favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- <link rel="stylesheet" href="../css/style.min.css"> -->
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/custom.css">
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/utility.css">
+    <link rel="stylesheet" href="./css/swiper-custom.css">
+    <link rel="stylesheet" href="./css/effect-web.css">
+</head>
+
+<body>
+    <header class="flex center-ver bg-white" id="header" data-include="./component/header.html"></header>
+    <main>
+        <section class="flex bg-gray container-f bg-white-secondary">
+            <div class="container-l nav-bar__container">
+                <a href="javascript:void(0)" class="nav-bar__item">Trang chủ</a>
+                <a href="javascript:void(0)" class="nav-bar__item">Video</a>
+            </div>
+        </section>
+        <section class="container-padding ">
+            <div class="container-l gap-20 section-video__container">
+                <div class="flex-1 flex flex-col gap-20">
+                    <div class="ratio-16x9 pos-rel overflow-hidden border-radius-10 bg-black">
+                        <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+                            title="Phỏng vấn Tác giả: Hành trình sáng tác tác phẩm & Ký ức thời hoa lửa"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen class="fill-view fill-height border-none">
+                        </iframe>
+                    </div>
+                    <h1 class="section-video__title bold">
+                        Phỏng vấn Tác giả: Hành trình sáng tác tác phẩm & Ký ức thời hoa lửa
+                    </h1>
+                    <div class="flex jus-end">
+                        <button type="button"
+                            class="btn-share flex center-ver gap-5 border-none bg-white-secondary item-padding-5-10 border-radius-5 cursor-pointer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16 6 12 2 8 6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            <span class="text-xs bold">Chia sẻ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <aside class="video-sidebar layout-sidebar">
+                    <div class="video-sidebar__head flex jus-sb center-ver item-padding-bottom">
+                        <h2 class="text-sm bold flex center-ver gap-5">
+                            <div class="ratio-1x1 video-sidebar__icon overflow-hidden">
+                                <img src="./img/icon/video.svg" class="img-icon" alt="">
+                            </div>
+                            <p class="video-sidebar__title">VIDEO LIÊN QUAN & CÙNG CHỦ ĐỀ</p>
+                        </h2>
+                        <a href="#" class="text-xs un-wrap" aria-label="xem tất cả">Xem tất cả &gt;</a>
+                    </div>
+
+                    <div class="video-sidebar__list flex flex-col gap-15">
+
+                        <!-- Item 1 -->
+                        <article class="video-card-sm flex gap-10 pos-rel">
+                            <div class="video-card-sm__thumb ratio-16x9 pos-rel overflow-hidden border-radius-5">
+                                <img src="./img/video/v-rel-1.jpg" alt="Đêm thơ & nhạc"
+                                    class="img-content fill-view fill-height">
+                            </div>
+                            <div class="flex flex-col jus-sb video-card-sm__content">
+                                <span class="text-xs bold text-color-primary uppercase">DIỄN ĐÀN VĂN HỌC</span>
+                                <h3 class="text-sm bold clamp-text clamp-line-three">
+                                    Đêm thơ & nhạc "Vang vọng hồn quê": Hành trình tìm lại ký ức văn hóa dân gian qua
+                                    những giai điệu đi cùng năm tháng
+                                </h3>
+                                <p class="text-xs text-color-deactive">3.100 lượt xem • 3 ngày trước</p>
+                            </div>
+                            <a href="#" class="link-overlay" aria-label="Đêm thơ & nhạc"></a>
+                        </article>
+
+                        <!-- Item 2 -->
+                        <article class="video-card-sm flex gap-10 pos-rel">
+                            <div class="video-card-sm__thumb ratio-16x9 pos-rel overflow-hidden border-radius-5">
+                                <img src="./img/video/v-rel-2.jpg" alt="Bút ký tư pháp"
+                                    class="img-content fill-view fill-height">
+                            </div>
+                            <div class="flex flex-col jus-sb video-card-sm__content">
+                                <span class="text-xs bold text-color-primary uppercase">TỌA ĐÀM CHUYÊN SÂU</span>
+                                <h3 class="text-sm bold clamp-text clamp-line-three">
+                                    Bút ký tư pháp và trách nhiệm ngòi bút: Lắng nghe tiếng nói nhân sinh và trăn trở từ
+                                    những góc khuất công lý
+                                </h3>
+                                <p class="text-xs text-color-deactive">1.840 lượt xem • 1 tuần trước</p>
+                            </div>
+                            <a href="#" class="link-overlay" aria-label="Bút ký tư pháp"></a>
+                        </article>
+
+                        <!-- Item 3 -->
+                        <article class="video-card-sm flex gap-10 pos-rel">
+                            <div class="video-card-sm__thumb ratio-16x9 pos-rel overflow-hidden border-radius-5">
+                                <img src="./img/video/v-rel-3.jpg" alt="Những giọt nước mắt"
+                                    class="img-content fill-view fill-height">
+                            </div>
+                            <div class="flex flex-col jus-sb video-card-sm__content">
+                                <span class="text-xs bold text-color-primary uppercase">KÝ SỰ TƯ LIỆU</span>
+                                <h3 class="text-sm bold clamp-text clamp-line-three">
+                                    Những giọt nước mắt ngày chiến thắng: Ký sự tư liệu xúc động về các chiến sĩ và ký
+                                    ức thời hoa lửa
+                                </h3>
+                                <p class="text-xs text-color-deactive">8.910 lượt xem • 2 tuần trước</p>
+                            </div>
+                            <a href="#" class="link-overlay" aria-label="Những giọt nước mắt"></a>
+                        </article>
+
+                        <!-- Item 4 -->
+                        <article class="video-card-sm flex gap-10 pos-rel">
+                            <div class="video-card-sm__thumb ratio-16x9 pos-rel overflow-hidden border-radius-5">
+                                <img src="./img/video/v-rel-4.jpg" alt="Tiếng vọng từ cội nguồn"
+                                    class="img-content fill-view fill-height">
+                            </div>
+                            <div class="flex flex-col jus-sb video-card-sm__content">
+                                <span class="text-xs bold text-color-primary uppercase">NGHIÊN CỨU & PHÊ BÌNH</span>
+                                <h3 class="text-sm bold clamp-text clamp-line-three">
+                                    Tiếng vọng từ cội nguồn: Phân tích chiều sâu giá trị truyền thống trong dòng chảy
+                                    nghệ thuật đương đại Việt Nam
+                                </h3>
+                                <p class="text-xs text-color-deactive">1.450 lượt xem • 3 tuần trước</p>
+                            </div>
+                            <a href="#" class="link-overlay" aria-label="Tiếng vọng từ cội nguồn"></a>
+                        </article>
+
+                        <!-- Item 5 -->
+                        <article class="video-card-sm flex gap-10 pos-rel">
+                            <div class="video-card-sm__thumb ratio-16x9 pos-rel overflow-hidden border-radius-5">
+                                <img src="./img/video/v-rel-5.jpg" alt="Podcast Giọng đọc đêm muộn"
+                                    class="img-content fill-view fill-height">
+                            </div>
+                            <div class="flex flex-col jus-sb video-card-sm__content">
+                                <span class="text-xs bold text-color-primary uppercase">PODCAST ĐÊM</span>
+                                <h3 class="text-sm bold clamp-text clamp-line-three">
+                                    Podcast Giọng đọc đêm muộn: Gió lạnh đầu mùa và những suy ngẫm trầm lắng về tình
+                                    người giữa lòng phố thị
+                                </h3>
+                                <p class="text-xs text-color-deactive">990 lượt xem • 1 tháng trước</p>
+                            </div>
+                            <a href="#" class="link-overlay" aria-label="Podcast Giọng đọc đêm muộn"></a>
+                        </article>
+
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+        <section class="video-dialogue bg-white-secondary">
+            <div class="container-l container-padding flex flex-col gap-30">
+                <div class="video-dialogue__header flex jus-sb align-end">
+                    <div class="flex flex-col gap-5">
+                        <span class="uppercase text-xs bold text-color-primary">• CHUYÊN MỤC NGHE & NHÌN</span>
+                        <h2 class="video-dialogue__title bold text-color-primary">Video & Đối Thoại Nghệ Thuật</h2>
+                    </div>
+                    <div class="video-dialogue__nav flex gap-10">
+                        <button type="button" aria-label="Previous slide"
+                            class="swiper-button-prev nav-btn flex center-all ">←</button>
+                        <button type="button" aria-label="Next slide"
+                            class="swiper-button-next nav-btn flex center-all ">→</button>
+                    </div>
+                </div>
+
+                <div class="js-slider-4cols fill-view swiper overflow-hidden">
+                    <div class="js-slider-wrapper swiper-wrapper">
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-1.jpg"
+                                        alt="Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        ĐỐI THOẠI CHUYÊN ĐỀ
+                                    </span>
+                                    <div class="video-card__play z-index-3 pos-abs ratio-1x1">
+                                        <img src="./img/icon/play.svg" class="img-content" alt="">
+                                    </div>
+                                    <span
+                                        class="video-card__duration z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs text-color-white bg-dark-overlay">
+                                        32:15
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">10.03.2026 • 1.840 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Nhà văn Dương Thanh Biểu cùng khách mời luận đàm về giá trị trung thực và ngọn
+                                        lửa nhân bản trong văn...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Vang vọng hồn quê trong thơ ca đương đại Việt Nam"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-2.jpg"
+                                        alt="Vang vọng hồn quê trong thơ ca đương đại Việt Nam" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        ĐÊM THƠ & NHẠC
+                                    </span>
+                                    <div class="video-card__play z-index-3 pos-abs ratio-1x1">
+                                        <img src="./img/icon/play.svg" class="img-content" alt="">
+                                    </div>
+                                    <span
+                                        class="video-card__duration z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs text-color-white bg-dark-overlay">
+                                        45:00
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">05.03.2026 • 3.120 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Vang vọng hồn quê trong thơ ca đương đại Việt Nam
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Không gian âm hưởng thơ nhạc ấm cúng, tái hiện những kỷ niệm mộc mạc bên luống
+                                        cày, bờ tre và tình...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Hành trình gìn giữ văn hóa và cốt cách người Việt"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-3.jpg"
+                                        alt="Hành trình gìn giữ văn hóa và cốt cách người Việt" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        KÝ SỰ CHÂN DUNG
+                                    </span>
+                                    <div class="video-card__play z-index-3 pos-abs ratio-1x1">
+                                        <img src="./img/icon/play.svg" class="img-content" alt="">
+                                    </div>
+                                    <span
+                                        class="video-card__duration z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs text-color-white bg-dark-overlay">
+                                        28:40
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">28.02.2026 • 2.490 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Hành trình gìn giữ văn hóa và cốt cách người Việt
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Theo chân những nghệ nhân và nhà nghiên cứu qua các làng nghề cổ truyền để ghi
+                                        lại những thước phim tư...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Hành trình gìn giữ văn hóa và cốt cách người Việt"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-4.jpg"
+                                        alt="Hành trình gìn giữ văn hóa và cốt cách người Việt" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        KÝ SỰ CHÂN DUNG
+                                    </span>
+                                    <div class="video-card__play z-index-3 pos-abs ratio-1x1">
+                                        <img src="./img/icon/play.svg" class="img-content" alt="">
+                                    </div>
+                                    <span
+                                        class="video-card__duration z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs text-color-white bg-dark-overlay">
+                                        28:40
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">28.02.2026 • 2.490 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Hành trình gìn giữ văn hóa và cốt cách người Việt
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Theo chân những nghệ nhân và nhà nghiên cứu qua các làng nghề cổ truyền để ghi
+                                        lại những thước phim tư...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="video-dialogue bg-white">
+            <div class="container-l container-padding flex flex-col gap-30">
+                <div class="video-dialogue__header flex jus-sb align-end">
+                    <div class="flex flex-col gap-5">
+                        <span class="uppercase text-xs bold text-color-primary">• CÙNG CHUYÊN ĐỀ</span>
+                        <h2 class="video-dialogue__title bold text-color-primary">Tác phẩm & Bài viết liên quan</h2>
+                    </div>
+                    <div class="video-dialogue__nav flex gap-10">
+                        <button type="button" aria-label="Previous slide"
+                            class="swiper-button-prev nav-btn flex center-all ">←</button>
+                        <button type="button" aria-label="Next slide"
+                            class="swiper-button-next nav-btn flex center-all ">→</button>
+                    </div>
+                </div>
+
+                <div class="js-slider-4cols fill-view swiper overflow-hidden">
+                    <div class="js-slider-wrapper swiper-wrapper">
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-1.jpg"
+                                        alt="Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        BÚT kí
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">10.03.2026 • 1.840 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Bút ký tư pháp và trách nhiệm ngòi bút với nhân sinh
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Nhà văn Dương Thanh Biểu cùng khách mời luận đàm về giá trị trung thực và ngọn
+                                        lửa nhân bản trong văn...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Vang vọng hồn quê trong thơ ca đương đại Việt Nam"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-2.jpg"
+                                        alt="Vang vọng hồn quê trong thơ ca đương đại Việt Nam" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        BÚT kí
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">05.03.2026 • 3.120 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Vang vọng hồn quê trong thơ ca đương đại Việt Nam
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Không gian âm hưởng thơ nhạc ấm cúng, tái hiện những kỷ niệm mộc mạc bên luống
+                                        cày, bờ tre và tình...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Hành trình gìn giữ văn hóa và cốt cách người Việt"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-3.jpg"
+                                        alt="Hành trình gìn giữ văn hóa và cốt cách người Việt" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        BÚT kí
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">28.02.2026 • 2.490 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Hành trình gìn giữ văn hóa và cốt cách người Việt
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Theo chân những nghệ nhân và nhà nghiên cứu qua các làng nghề cổ truyền để ghi
+                                        lại những thước phim tư...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide col-4">
+                            <article
+                                class="item-card hover-border-primary pos-rel flex flex-col bg-white border-radius-15 overflow-hidden shadow-sm">
+                                <a href="javascript:void(0)"
+                                    aria-label="Hành trình gìn giữ văn hóa và cốt cách người Việt"
+                                    class="link-overlay"></a>
+                                <div class="video-card__img ratio-16x9 pos-rel overflow-hidden">
+                                    <img src="./img/content/video-4.jpg"
+                                        alt="Hành trình gìn giữ văn hóa và cốt cách người Việt" class="img-content">
+                                    <span
+                                        class="video-card__badge z-index-3 item-padding-5-10 pos-abs border-radius-5 text-xs bold uppercase bg-white text-color-primary">
+                                        BÚT kí
+                                    </span>
+                                </div>
+                                <div
+                                    class="video-card__content flex-1 flex flex-col gap-10 item-padding-20 bg-second-white">
+                                    <span class="text-xs text-color-deactive">28.02.2026 • 2.490 lượt xem</span>
+                                    <h3 class="video-card__title bold text-color-primary clamp-text  clamp-line-two">
+                                        Hành trình gìn giữ văn hóa và cốt cách người Việt
+                                    </h3>
+                                    <p class="video-card__desc text-xs text-color-deactive line-clamp-2">
+                                        Theo chân những nghệ nhân và nhà nghiên cứu qua các làng nghề cổ truyền để ghi
+                                        lại những thước phim tư...
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-white-secondary" id="footer" data-include="./component/footer.html"></footer>
+    <div class="btntotop__container pos-fixed bg-white" data-include="./component/rolltotop.html" id="btnToTop">
+    </div>
+    <script defer type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script defer type="text/javascript" src="./js/frontend.js"></script>
+</body>
+
+</html>
