@@ -360,54 +360,60 @@ function renderDynamicList(headingData, targetSelector) {
 function initSwiperSlider({
   mainSelector,
   wrapperSelector = null,
-  minSlides = 0,
   autoplay = false,
   spaceBetween = 0,
   slidesPerView = 1,
   slidesPerGroup = 1,
   loop = false,
+  rewind = false,
   autoGroupRows = 1,
+  isThumb = false,
   navigation = { nextEl: null, prevEl: null },
   pagination = { el: null, clickable: true },
   breakpoints = null,
   ...extraOptions
 }) {
   const swiperContainers = document.querySelectorAll(mainSelector);
-  if (swiperContainers.length === 0) return;
+  if (swiperContainers.length === 0) return null;
+
+  const instances = [];
 
   let finalOptions = { ...extraOptions };
   let finalBreakpoints = breakpoints ? { ...breakpoints } : null;
-  let finalLoop = loop;
 
   if (autoGroupRows > 1) {
-    delete finalOptions.grid; // Xoá grid ở cấp ngoài
+    delete finalOptions.grid;
     if (finalBreakpoints) {
       Object.keys(finalBreakpoints).forEach(key => {
+        if (finalBreakpoints[key]) finalBreakpoints[key] = { ...finalBreakpoints[key] };
         delete finalBreakpoints[key].grid;
       });
-    }
-  } else {
-    let hasGrid = finalOptions.grid && finalOptions.grid.rows > 1;
-    if (finalBreakpoints && !hasGrid) {
-      hasGrid = Object.values(finalBreakpoints).some(bp => bp.grid && bp.grid.rows > 1);
-    }
-    if (hasGrid && finalLoop) {
-      finalLoop = false;
     }
   }
 
   swiperContainers.forEach(container => {
+    // 1. Dọn dẹp instance cũ
+    if (container.swiper && typeof container.swiper.destroy === 'function') {
+      container.swiper.destroy(true, true);
+      container.swiper = null;
+    }
+    container.classList.remove('js-grouped');
+
     const wrapper = container.querySelector('.swiper-wrapper');
     if (!wrapper) return;
 
-    // ==============================================================
-    // 1. MA THUẬT GOM NHÓM (DÙNG FRAGMENT CHỐNG FORCED REFLOW)
-    // ==============================================================
-    if (autoGroupRows > 1 && !container.classList.contains('js-grouped')) {
+    // 2. KHÔI PHỤC DOM GỐC (Tránh nhân bản chồng chất 8 -> 16 -> 32 khi re-init)
+    if (!container.dataset.originalHtml) {
+      container.dataset.originalHtml = wrapper.innerHTML;
+    } else {
+      wrapper.innerHTML = container.dataset.originalHtml;
+    }
+
+    // Grid layout thủ công (autoGroupRows)
+    if (autoGroupRows > 1) {
       const originalSlides = Array.from(wrapper.children);
       wrapper.innerHTML = '';
-
-      const fragment = document.createDocumentFragment(); // TẠO KHO TẠM
+      const fragment = document.createDocumentFragment();
 
       for (let i = 0; i < originalSlides.length; i += autoGroupRows) {
         const chunk = originalSlides.slice(i, i + autoGroupRows);
@@ -415,140 +421,181 @@ function initSwiperSlider({
         groupSlide.className = 'swiper-slide flex flex-col gap-20';
 
         chunk.forEach(slide => {
-          slide.classList.remove('swiper-slide', 'col-3', 'col-4', 'col-2', 'col-6'); // Tháo class chia cột ngang
+          slide.classList.remove('swiper-slide', 'col-3', 'col-4', 'col-2', 'col-6');
           slide.style.width = '100%';
           groupSlide.appendChild(slide);
         });
-        fragment.appendChild(groupSlide); // NHÉT VÀO KHO TẠM
+        fragment.appendChild(groupSlide);
       }
-
-      wrapper.appendChild(fragment); // ỤP KHO TẠM RA GIAO DIỆN 1 LẦN DUY NHẤT
+      wrapper.appendChild(fragment);
       container.classList.add('js-grouped');
     }
 
-    // ==============================================================
-    // 2. LOGIC HACK LOOP NHÂN BẢN (CŨNG DÙNG FRAGMENT LUÔN)
-    // ==============================================================
-    if (finalLoop && wrapper) {
-      const currentSlides = Array.from(wrapper.children);
-      const totalSlides = currentSlides.length;
-      // Tìm số slidesPerView lớn nhất trong breakpoints để clone cho đủ
-      let maxView = slidesPerView;
-      if (finalBreakpoints) {
-        Object.values(finalBreakpoints).forEach(bp => {
-          if (bp.slidesPerView > maxView) maxView = bp.slidesPerView;
-        });
-      }
-      const threshold = Math.max(minSlides, maxView * 2);
-      if (totalSlides > 0 && totalSlides < threshold) {
-        const times = Math.ceil(threshold / totalSlides) - 1;
+    // 3. ĐẾM SỐ SLIDE THỰC TẾ BAN ĐẦU (Trước khi clone)
+    const realSlideCount = wrapper.children.length;
 
-        const cloneFragment = document.createDocumentFragment(); // TẠO KHO TẠM CLONE
-
-        for (let i = 0; i < times; i++) {
-          currentSlides.forEach(s => cloneFragment.appendChild(s.cloneNode(true)));
+    let maxSlidesPerView = Number(slidesPerView) || 1;
+    if (finalBreakpoints) {
+      Object.values(finalBreakpoints).forEach(bp => {
+        if (bp.slidesPerView && Number(bp.slidesPerView) > maxSlidesPerView) {
+          maxSlidesPerView = Number(bp.slidesPerView);
         }
+      });
+    }
 
-        wrapper.appendChild(cloneFragment); // ỤP KHO TẠM RA GIAO DIỆN
+    let finalLoop = isThumb ? false : loop;
+    let finalRewind = isThumb ? false : rewind;
+
+    // 4. CLONE THỦ CÔNG NẾU THIẾU SLIDE ĐỂ CHẠY LOOP
+    if (finalLoop && autoGroupRows <= 1) {
+      const originalSlides = Array.from(wrapper.children);
+      const originalCount = originalSlides.length;
+
+      if (originalCount > 0 && originalCount <= maxSlidesPerView) {
+        while (wrapper.children.length <= maxSlidesPerView * 2) {
+          originalSlides.forEach(slide => {
+            const clone = slide.cloneNode(true);
+            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+            if (clone.hasAttribute('id')) clone.removeAttribute('id');
+            wrapper.appendChild(clone);
+          });
+        }
       }
     }
 
-    // 3. KHOANH VÙNG NAVIGATION & PAGINATION
+    // Xử lý cờ no-auto-slide
+    let localAutoplay = autoplay;
     const scope = wrapperSelector ? container.closest(wrapperSelector) : container.parentElement;
+    if (container.classList.contains('no-auto-slide') || (scope && scope.classList.contains('no-auto-slide'))) {
+      localAutoplay = false;
+    }
+
+    // Scope cho Navigation
     const nav = navigation && (navigation.nextEl || navigation.prevEl) ? {
       nextEl: scope && navigation.nextEl ? scope.querySelector(navigation.nextEl) : navigation.nextEl,
       prevEl: scope && navigation.prevEl ? scope.querySelector(navigation.prevEl) : navigation.prevEl,
     } : false;
 
-    const pag = pagination && pagination.el ? {
-      ...pagination,
-      el: scope && pagination.el ? scope.querySelector(pagination.el) : pagination.el,
-    } : false;
+    // 5. CẤU HÌNH PAGINATION - ẨN DOT CỦA SLIDE CLONE
+    let pag = false;
+    if (pagination && pagination.el) {
+      const pagEl = scope && pagination.el ? scope.querySelector(pagination.el) : pagination.el;
+      if (pagEl) {
+        pag = {
+          ...pagination,
+          el: pagEl,
+          renderBullet: function (index, className) {
+            // Chỉ tạo dot cho số slide gốc ban đầu
+            if (realSlideCount > 0 && index >= realSlideCount) {
+              return ''; // Bỏ qua slide clone
+            }
+            if (typeof pagination.renderBullet === 'function') {
+              return pagination.renderBullet(index, className);
+            }
+            return `<span class="${className}"></span>`;
+          }
+        };
+      }
+    }
 
-    // ==============================================================
-    // 4. KHỞI TẠO SWIPER KÈM SETTIMEOUT CHO TRÌNH DUYỆT THỞ
-    // ==============================================================
+    // 6. HÀM CẬP NHẬT ACTIVE DOT THEO VÒNG LẶP (1-2-3-4 -> 1-2-3-4)
+    const updatePaginationSync = (swiper) => {
+      if (realSlideCount > 0 && swiper.pagination && swiper.pagination.bullets) {
+        const bullets = Array.from(swiper.pagination.bullets);
+        if (bullets.length > 0) {
+          const currentRealIndex = swiper.realIndex !== undefined ? swiper.realIndex : swiper.activeIndex;
+          const targetIndex = currentRealIndex % realSlideCount;
+
+          bullets.forEach((bullet, idx) => {
+            if (idx === targetIndex) {
+              bullet.classList.add('swiper-pagination-bullet-active');
+            } else {
+              bullet.classList.remove('swiper-pagination-bullet-active');
+            }
+          });
+        }
+      }
+    };
+
+    // 7. KHỞI TẠO SWIPER
     const swiperOptions = {
       slidesPerView: slidesPerView,
       slidesPerGroup: slidesPerGroup,
       spaceBetween: spaceBetween,
       loop: finalLoop,
+      rewind: finalRewind,
       navigation: nav,
       pagination: pag,
       breakpoints: finalBreakpoints,
-      autoplay: autoplay ? {
+      autoplay: localAutoplay ? {
         delay: 2500,
         disableOnInteraction: false,
-        ...(typeof autoplay === 'object' ? autoplay : {})
+        ...(typeof localAutoplay === 'object' ? localAutoplay : {})
       } : false,
+
+      on: {
+        ...(extraOptions.on || {}),
+        init: function (swiper) {
+          updatePaginationSync(swiper);
+          if (extraOptions.on && typeof extraOptions.on.init === 'function') {
+            extraOptions.on.init(swiper);
+          }
+        },
+        slideChange: function (swiper) {
+          updatePaginationSync(swiper);
+          if (extraOptions.on && typeof extraOptions.on.slideChange === 'function') {
+            extraOptions.on.slideChange(swiper);
+          }
+        }
+      },
       ...finalOptions
     };
 
-    // Bọc trong setTimeout 0ms để tách việc DOM Rendering ra khỏi việc Swiper đo đạc
-    setTimeout(() => {
-      new Swiper(container, swiperOptions);
-    }, 0);
-
+    const swiperInstance = new Swiper(container, swiperOptions);
+    container.swiper = swiperInstance;
+    instances.push(swiperInstance);
   });
+
+  return instances.length === 1 ? instances[0] : instances;
 }
 
-// js tự động thêm class khi cuộn chuột
-// function initScrollToTop(btnId = "btnToTop", showOffset = 1000) {
-//   const scrollBtn = document.getElementById(btnId);
-//   if (!scrollBtn) return;
 
-//   window.addEventListener("scroll", () => {
-//     if (window.scrollY > showOffset) {
-//       scrollBtn.classList.add("show");
-//     } else {
-//       scrollBtn.classList.remove("show");
-//     }
-//   });
-
-//   scrollBtn.addEventListener("click", () => {
-//     window.scroll({
-//       top: 0,
-//       behavior: "smooth",
-//     });
-//   });
-// }
-
-function watchScrollTrigger({ 
-    target, 
-    triggerPx = 100, 
-    className = 'active', 
-    scrollTo = null 
+function watchScrollTrigger({
+  target,
+  triggerPx = 100,
+  className = 'active',
+  scrollTo = null
 }) {
-    const element = typeof target === 'string' ? document.querySelector(target) : target;
-    if (!element) return;
+  const element = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!element) return;
 
-    // 1. Logic Toggle Class khi Scroll (Tối ưu bằng requestAnimationFrame & classList.toggle)
-    let ticking = false;
-    const handleScroll = () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                element.classList.toggle(className, window.scrollY >= triggerPx);
-                ticking = false;
-            });
-            ticking = true;
-        }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
-    // 2. Logic Click cuộn mượt (Chỉ kích hoạt khi truyền tham số scrollTo)
-    if (scrollTo !== null) {
-        element.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            if (typeof scrollTo === 'number') {
-                window.scrollTo({ top: scrollTo, behavior: 'smooth' });
-            } else if (typeof scrollTo === 'string') {
-                document.querySelector(scrollTo)?.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+  // 1. Logic Toggle Class khi Scroll (Tối ưu bằng requestAnimationFrame & classList.toggle)
+  let ticking = false;
+  const handleScroll = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        element.classList.toggle(className, window.scrollY >= triggerPx);
+        ticking = false;
+      });
+      ticking = true;
     }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+
+  // 2. Logic Click cuộn mượt (Chỉ kích hoạt khi truyền tham số scrollTo)
+  if (scrollTo !== null) {
+    element.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      if (typeof scrollTo === 'number') {
+        window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+      } else if (typeof scrollTo === 'string') {
+        document.querySelector(scrollTo)?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
 }
 
 // js validate form
@@ -762,16 +809,16 @@ function initSkeletonLoader(options = {}) {
 // ----------- Vùng gọi biến --------------
 document.addEventListener("DOMContentLoaded", () => {
   includeHTML(() => {
+    // 1. SLIDER BANNER (1 Cột)
     initSwiperSlider({
-      mainSelector: '.js-slider-banner', // Tên class dùng chung
-      wrapperSelector: '.js-slider-wrapper', // BẮT BUỘC có thẻ bọc ngoài chung class này
-      minSlides: 3,
+      mainSelector: '.js-slider-banner',
+      wrapperSelector: '.js-slider-wrapper',
       slidesPerView: 1,
       spaceBetween: 0,
       loop: true,
       autoplay: { delay: 3000, disableOnInteraction: false },
       navigation: {
-        nextEl: '.swiper-button-next', // Tự động tìm nút trong wrapper
+        nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
       pagination: {
@@ -780,30 +827,10 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-    // 2. SLIDER 3 CỘT (Dùng cho Dự án, Bình luận, Dịch vụ...)
+    // 2. SLIDER 3 CỘT (Dự án, Bình luận, Dịch vụ)
     initSwiperSlider({
       mainSelector: '.js-slider-3cols',
       wrapperSelector: '.js-slider-wrapper',
-      minSlides: 6,
-      loop: true,
-      autoplay: { delay: 3000, disableOnInteraction: false },
-      navigation: {
-        nextEl: '.swiper-button-next', // Tự động tìm nút trong wrapper
-        prevEl: '.swiper-button-prev',
-      },
-      pagination: { el: '.custom-dots', clickable: true },
-      breakpoints: {
-        320: { slidesPerView: 1, spaceBetween: 10 },
-        768: { slidesPerView: 2, spaceBetween: 15 },
-        1024: { slidesPerView: 3, spaceBetween: 20 }
-      }
-    });
-
-    // 3. SLIDER 4 CỘT (Dùng cho Tin tức, Sản phẩm...)
-    initSwiperSlider({
-      mainSelector: '.js-slider-4cols',
-      wrapperSelector: '.js-slider-wrapper',
-      minSlides: 6,
       loop: true,
       autoplay: { delay: 3000, disableOnInteraction: false },
       navigation: {
@@ -811,78 +838,78 @@ document.addEventListener("DOMContentLoaded", () => {
         prevEl: '.swiper-button-prev',
       },
       pagination: {
-        el: '.swiper-pagination', // ĐÃ SỬA CHUẨN
-        clickable: true
+        el: '.custom-dots',
+        clickable: true,
+      },
+      breakpoints: {
+        320: { slidesPerView: 1, spaceBetween: 10 },
+        768: { slidesPerView: 2, spaceBetween: 15 },
+        1024: { slidesPerView: 3, spaceBetween: 20 },
+      },
+    });
+
+    // 3. SLIDER 4 CỘT (Tin tức, Sản phẩm)
+    initSwiperSlider({
+      mainSelector: '.js-slider-4cols',
+      wrapperSelector: '.js-slider-wrapper',
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      navigation: {
+        nextEl: '.video-dialogue__nav .swiper-button-next',
+        prevEl: '.video-dialogue__nav .swiper-button-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
       },
       breakpoints: {
         320: { slidesPerView: 2, spaceBetween: 10 },
         768: { slidesPerView: 3, spaceBetween: 15 },
-        1024: { slidesPerView: 4, spaceBetween: 20 }
-      }
+        1024: { slidesPerView: 4, spaceBetween: 20 },
+      },
     });
 
-    // 4. SLIDER LOGO / THƯƠNG HIỆU (Dạng lưới Grid chia hàng)
+    // 4. SLIDER LOGO / THƯƠNG HIỆU (Gom 2 hàng thủ công bằng autoGroupRows)
     initSwiperSlider({
       mainSelector: '.js-slider-logo',
       wrapperSelector: '.js-slider-wrapper',
-      minSlides: 18,
-      loop: true,
-      autoGroupRows: 2,
+      loop: false,
+      autoGroupRows: 2, 
       autoplay: { delay: 3000, disableOnInteraction: false },
       navigation: {
-        nextEl: '.swiper-button-next', // Tự động tìm nút trong wrapper
+        nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
-      pagination: { el: '.swiper-pagination', clickable: true },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
       breakpoints: {
-        500: {
-          slidesPerView: 2, spaceBetween: 20, slidesPerGroup: 2,
-          grid: { rows: 2, fill: 'row' }
-        },
-        900: {
-          slidesPerView: 4, spaceBetween: 20, slidesPerGroup: 4,
-          grid: { rows: 2, fill: 'row' }
-        },
-        1200: {
-          slidesPerView: 5, spaceBetween: 20, slidesPerGroup: 5,
-          grid: { rows: 3, fill: 'row' }
-        },
-      }
+        320: { slidesPerView: 2, spaceBetween: 15 },
+        768: { slidesPerView: 4, spaceBetween: 20 },
+        1024: { slidesPerView: 5, spaceBetween: 20 },
+      },
     });
 
-    // 5. SLIDER lúc đầu là tỉnh khi xuống mobile thì thành slide
-
+    // 5. SLIDER ĐIỀU CHỈNH SỐ CỘT THEO RESPONSIVE (Grid to Slide)
     initSwiperSlider({
       mainSelector: '.js-slider-grid-to-slide',
       wrapperSelector: '.js-slider-wrapper',
-      minSlides: 6,
-
       loop: false,
       autoplay: false,
-
-      navigation: { nextEl: '.custom-next-btn', prevEl: '.custom-prev-btn' },
-      pagination: { el: '.custom-dots', clickable: true },
-
+      navigation: {
+        nextEl: '.custom-next-btn',
+        prevEl: '.custom-prev-btn',
+      },
+      pagination: {
+        el: '.custom-dots',
+        clickable: true,
+      },
       breakpoints: {
-        320: {
-          slidesPerView: 2, // Mobile: Trượt ngang 2 sản phẩm
-          spaceBetween: 10,
-          grid: { rows: 1, fill: 'row' } // Trả về 1 hàng ngang
-        },
-        768: {
-          slidesPerView: 3, // Tablet: Trượt ngang 3 sản phẩm
-          spaceBetween: 15,
-          grid: { rows: 1, fill: 'row' } // Trả về 1 hàng ngang
-        },
-        1024: {
-          slidesPerView: 3, // PC: Chia 3 cột
-          spaceBetween: 20,
-          grid: {
-            rows: 2, // KẾT HỢP VỚI 3 CỘT = LƯỚI 6 SẢN PHẨM / TRANG
-            fill: 'row' // Ưu tiên xếp từ trái sang phải, rồi mới rớt dòng
-          }
-        }
-      }
+        320: { slidesPerView: 2, spaceBetween: 10 },
+        768: { slidesPerView: 3, spaceBetween: 15 },
+        1024: { slidesPerView: 3, spaceBetween: 20 },
+      },
     });
 
     initToggleSystem([
@@ -926,15 +953,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🟡 roll to the top
     watchScrollTrigger({
-        target: '.btntotop__container',
-        triggerPx: 1200,
-        scrollTo:0,
+      target: '.btntotop__container',
+      triggerPx: 1200,
+      scrollTo: 0,
     });
-    watchScrollTrigger({
-        target: '.menu-top__logo',
-        triggerPx: 200,
-        className: 'active'
-    });
+    // watchScrollTrigger({
+    //   target: '.menu-top__container',
+    //   triggerPx: 200,
+    //   className: 'active'
+    // });
     // ✨ 4️⃣ HIỆU ỨNG ẢNH & REVEAL
     applyImageEnhancements();
     initRevealEffect();

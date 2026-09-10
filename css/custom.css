@@ -13,8 +13,8 @@
     max-width: 53.87px;
 }
 
-.menu-top__logo.active{
-    max-width: 100px;
+.menu-top__container.active{
+    display: none;
 }
 
 .menu-bottom__container {
