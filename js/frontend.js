@@ -976,6 +976,12 @@ document.addEventListener("DOMContentLoaded", () => {
       scrollTo: 0,
     });
     watchScrollTrigger({
+      target: '.menu-top__logo',
+      triggerPx: 200,      
+      offTriggerPx: 150,  
+      className: 'active'
+    });
+    watchScrollTrigger({
       target: '.menu-top__container',
       triggerPx: 200,      
       offTriggerPx: 150,  
