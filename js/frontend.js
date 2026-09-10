@@ -492,25 +492,63 @@ function initSwiperSlider({
   });
 }
 
-// js roll to top
-function initScrollToTop(btnId = "btnToTop", showOffset = 1000) {
-  const scrollBtn = document.getElementById(btnId);
-  if (!scrollBtn) return;
+// js tự động thêm class khi cuộn chuột
+// function initScrollToTop(btnId = "btnToTop", showOffset = 1000) {
+//   const scrollBtn = document.getElementById(btnId);
+//   if (!scrollBtn) return;
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > showOffset) {
-      scrollBtn.classList.add("show");
-    } else {
-      scrollBtn.classList.remove("show");
+//   window.addEventListener("scroll", () => {
+//     if (window.scrollY > showOffset) {
+//       scrollBtn.classList.add("show");
+//     } else {
+//       scrollBtn.classList.remove("show");
+//     }
+//   });
+
+//   scrollBtn.addEventListener("click", () => {
+//     window.scroll({
+//       top: 0,
+//       behavior: "smooth",
+//     });
+//   });
+// }
+
+function watchScrollTrigger({ 
+    target, 
+    triggerPx = 100, 
+    className = 'active', 
+    scrollTo = null 
+}) {
+    const element = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!element) return;
+
+    // 1. Logic Toggle Class khi Scroll (Tối ưu bằng requestAnimationFrame & classList.toggle)
+    let ticking = false;
+    const handleScroll = () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                element.classList.toggle(className, window.scrollY >= triggerPx);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    // 2. Logic Click cuộn mượt (Chỉ kích hoạt khi truyền tham số scrollTo)
+    if (scrollTo !== null) {
+        element.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (typeof scrollTo === 'number') {
+                window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+            } else if (typeof scrollTo === 'string') {
+                document.querySelector(scrollTo)?.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
     }
-  });
-
-  scrollBtn.addEventListener("click", () => {
-    window.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
-  });
 }
 
 // js validate form
@@ -887,7 +925,16 @@ document.addEventListener("DOMContentLoaded", () => {
     ]);
 
     // 🟡 roll to the top
-    initScrollToTop();
+    watchScrollTrigger({
+        target: '.btntotop__container',
+        triggerPx: 1200,
+        scrollTo:0,
+    });
+    watchScrollTrigger({
+        target: '.menu-top__logo',
+        triggerPx: 200,
+        className: 'active'
+    });
     // ✨ 4️⃣ HIỆU ỨNG ẢNH & REVEAL
     applyImageEnhancements();
     initRevealEffect();

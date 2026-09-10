@@ -5,11 +5,17 @@
 
 .menu-top__logo {
     aspect-ratio: 304 / 90;
+    transition: all 0.4s ease;
+    max-width: 300px;
 }
 
 .menu-mobile__logo {
     aspect-ratio: 304 / 90;
     max-width: 53.87px;
+}
+
+.menu-top__logo.active{
+    max-width: 100px;
 }
 
 .menu-bottom__container {
@@ -413,7 +419,6 @@
 
 /* css roll to top */
 .btntotop__container {
-    position: fixed;
     width: 42px;
     height: 42px;
     bottom: 30px;
@@ -433,7 +438,7 @@
     max-width: 52px;
 }
 
-.btntotop__container.show {
+.btntotop__container.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
