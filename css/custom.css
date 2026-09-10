@@ -80,6 +80,20 @@
     border-bottom: 5px solid var(--primary-color);
 }
 
+/* css contact */
+.contact-avatar__container{
+    max-width: 64px;
+}
+
+.contact-info__icon{
+    max-width: 15px;
+    max-height: 15px;
+}
+
+.form-input {
+    background-color: var(--white-color);
+}
+
 /* css index */
 .sec-hero__thumb {
     flex: 0 0 35%;
