@@ -107,7 +107,6 @@
 
 .sec-hero__title {
     font-size: calc(var(--font-size-base) + 28px);
-    text-transform: capitalize;
 }
 
 .sec-hero__penname {
