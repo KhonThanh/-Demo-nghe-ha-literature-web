@@ -402,7 +402,7 @@ function initSwiperSlider({
     const wrapper = container.querySelector('.swiper-wrapper');
     if (!wrapper) return;
 
-    // 2. KHÔI PHỤC DOM GỐC (Tránh nhân bản chồng chất 8 -> 16 -> 32 khi re-init)
+    // 2. KHÔI PHỤC DOM GỐC
     if (!container.dataset.originalHtml) {
       container.dataset.originalHtml = wrapper.innerHTML;
     } else {
@@ -431,7 +431,7 @@ function initSwiperSlider({
       container.classList.add('js-grouped');
     }
 
-    // 3. ĐẾM SỐ SLIDE THỰC TẾ BAN ĐẦU (Trước khi clone)
+    // 3. ĐẾM SỐ SLIDE THỰC TẾ BAN ĐẦU
     const realSlideCount = wrapper.children.length;
 
     let maxSlidesPerView = Number(slidesPerView) || 1;
@@ -470,24 +470,31 @@ function initSwiperSlider({
       localAutoplay = false;
     }
 
+    // HÀM TÌM ELEM TỰ ĐỘNG: Tìm trong Scope trước -> không thấy thì tìm toàn trang (Fallback)
+    const findEl = (selector) => {
+      if (!selector) return null;
+      if (typeof selector !== 'string') return selector;
+      return (scope && scope.querySelector(selector)) || document.querySelector(selector);
+    };
+
     // Scope cho Navigation
     const nav = navigation && (navigation.nextEl || navigation.prevEl) ? {
-      nextEl: scope && navigation.nextEl ? scope.querySelector(navigation.nextEl) : navigation.nextEl,
-      prevEl: scope && navigation.prevEl ? scope.querySelector(navigation.prevEl) : navigation.prevEl,
+      ...navigation,
+      nextEl: findEl(navigation.nextEl),
+      prevEl: findEl(navigation.prevEl),
     } : false;
 
     // 5. CẤU HÌNH PAGINATION - ẨN DOT CỦA SLIDE CLONE
     let pag = false;
     if (pagination && pagination.el) {
-      const pagEl = scope && pagination.el ? scope.querySelector(pagination.el) : pagination.el;
+      const pagEl = findEl(pagination.el);
       if (pagEl) {
         pag = {
           ...pagination,
           el: pagEl,
           renderBullet: function (index, className) {
-            // Chỉ tạo dot cho số slide gốc ban đầu
             if (realSlideCount > 0 && index >= realSlideCount) {
-              return ''; // Bỏ qua slide clone
+              return '';
             }
             if (typeof pagination.renderBullet === 'function') {
               return pagination.renderBullet(index, className);
@@ -498,7 +505,7 @@ function initSwiperSlider({
       }
     }
 
-    // 6. HÀM CẬP NHẬT ACTIVE DOT THEO VÒNG LẶP (1-2-3-4 -> 1-2-3-4)
+    // 6. HÀM CẬP NHẬT ACTIVE DOT THEO VÒNG LẶP
     const updatePaginationSync = (swiper) => {
       if (realSlideCount > 0 && swiper.pagination && swiper.pagination.bullets) {
         const bullets = Array.from(swiper.pagination.bullets);
@@ -559,22 +566,33 @@ function initSwiperSlider({
   return instances.length === 1 ? instances[0] : instances;
 }
 
-
 function watchScrollTrigger({
   target,
   triggerPx = 100,
+  offTriggerPx = null, // Thêm ngưỡng tắt tùy chỉnh (Vùng đệm)
   className = 'active',
   scrollTo = null
 }) {
   const element = typeof target === 'string' ? document.querySelector(target) : target;
   if (!element) return;
 
-  // 1. Logic Toggle Class khi Scroll (Tối ưu bằng requestAnimationFrame & classList.toggle)
+  // Nếu không truyền offTriggerPx, tự động tạo vùng đệm 40px
+  const thresholdOn = triggerPx;
+  const thresholdOff = offTriggerPx !== null ? offTriggerPx : Math.max(0, triggerPx - 40);
+
   let ticking = false;
   const handleScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
-        element.classList.toggle(className, window.scrollY >= triggerPx);
+        const currentY = window.scrollY;
+
+        // Logic Hysteresis: Chỉ bật khi >= thresholdOn, chỉ tắt khi < thresholdOff
+        if (currentY >= thresholdOn) {
+          element.classList.add(className);
+        } else if (currentY < thresholdOff) {
+          element.classList.remove(className);
+        }
+
         ticking = false;
       });
       ticking = true;
@@ -584,7 +602,6 @@ function watchScrollTrigger({
   window.addEventListener('scroll', handleScroll, { passive: true });
   handleScroll();
 
-  // 2. Logic Click cuộn mượt (Chỉ kích hoạt khi truyền tham số scrollTo)
   if (scrollTo !== null) {
     element.addEventListener('click', (e) => {
       e.preventDefault();
@@ -874,7 +891,7 @@ document.addEventListener("DOMContentLoaded", () => {
       mainSelector: '.js-slider-logo',
       wrapperSelector: '.js-slider-wrapper',
       loop: false,
-      autoGroupRows: 2, 
+      autoGroupRows: 2,
       autoplay: { delay: 3000, disableOnInteraction: false },
       navigation: {
         nextEl: '.swiper-button-next',
@@ -955,13 +972,15 @@ document.addEventListener("DOMContentLoaded", () => {
     watchScrollTrigger({
       target: '.btntotop__container',
       triggerPx: 1200,
+      offTriggerPx: 1000,
       scrollTo: 0,
     });
-    // watchScrollTrigger({
-    //   target: '.menu-top__container',
-    //   triggerPx: 200,
-    //   className: 'active'
-    // });
+    watchScrollTrigger({
+      target: '.menu-top__container',
+      triggerPx: 200,      
+      offTriggerPx: 150,  
+      className: 'active'
+    });
     // ✨ 4️⃣ HIỆU ỨNG ẢNH & REVEAL
     applyImageEnhancements();
     initRevealEffect();

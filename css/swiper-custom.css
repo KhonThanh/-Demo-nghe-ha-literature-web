@@ -41,7 +41,7 @@
 .custom-next-btn:hover,
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: var(--primary-color) !important;
+    background-color: var(--bg-white-secondary) !important;
 }
 
 .custom-prev-btn:hover::after,
@@ -159,7 +159,7 @@
 /* --- BIẾN THỂ CHO BANNER --- */
 /* Banner thì dots nằm lọt lòng bên trong ảnh, màu trắng */
 .js-slider-banner .swiper-pagination {
-    bottom: 20px !important;
+    bottom: 30px !important;
 }
 .js-slider-banner .swiper-pagination-bullet {
     background-color: var(--white-color);

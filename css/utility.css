@@ -14,6 +14,7 @@
 .text-color-white p, .text-color-white { color: var(--white-color); }
 .text-color-deactive { color: var(--deactive-color); }
 .text-color-primary { color: var(--primary-color); }
+.text-color-white-secondary { color: var(--second-white-color )}
 .text-red { color: var(--error-color);}
 .text-black { color: var(--black-color, #000); }
 
