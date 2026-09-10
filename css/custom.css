@@ -120,7 +120,7 @@
 }
 
 .sec-hero__quote p {
-    font-size: calc(var(--font-size-base) + 8px);
+    font-size: calc(var(--font-size-base) );
     font-weight: bold;
 }
 

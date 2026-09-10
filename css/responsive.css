@@ -115,6 +115,10 @@
     .section-video__title{
         font-size: calc(var(--font-size-base) + 8px);
     }
+
+    .sec-hero__actions a{
+        flex-grow: 1;
+    }
 }
 
 /* 
@@ -148,6 +152,13 @@
         padding-bottom: 0px;
     }
 
+    .sec-hero__quote{
+        padding: 15px;
+    }
+
+    .sec-hero__quote p{
+        font-size: calc(var(--font-size-base) - 2px);
+    }
 }
 
 @media screen and (max-width: 551px) {
