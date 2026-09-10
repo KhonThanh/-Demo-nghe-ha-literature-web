@@ -823,6 +823,34 @@ function initSkeletonLoader(options = {}) {
   }, delay);
 }
 
+function disableGlobalCopy() {
+  // Các sự kiện liên quan tới việc chọn, kéo rê và copy chữ
+  const blockedEvents = ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'];
+
+  blockedEvents.forEach(eventType => {
+    document.addEventListener(eventType, (e) => {
+      e.preventDefault();
+    }, true); // UseCapture = true giúp chặn ngay từ tầng ngoài cùng
+  });
+
+  // Chặn các tổ hợp phím tắt chọn & copy toàn trang
+  window.addEventListener('keydown', (e) => {
+    const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+    const key = e.key.toLowerCase();
+
+    if (
+      (isCtrlOrCmd && ['c', 'a', 'u', 's', 'p'].includes(key)) || // Ctrl + C, A (chọn tất cả), U, S, P
+      (isCtrlOrCmd && e.shiftKey && ['i', 'j', 'c'].includes(key)) || // Ctrl + Shift + I/J/C (DevTools)
+      e.key === 'F12'
+    ) {
+      e.preventDefault();
+    }
+  }, true);
+}
+
+// Gọi hàm trực tiếp để kích hoạt toàn trang
+disableGlobalCopy();
+
 // ----------- Vùng gọi biến --------------
 document.addEventListener("DOMContentLoaded", () => {
   includeHTML(() => {
@@ -977,13 +1005,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     watchScrollTrigger({
       target: '.menu-top__logo',
-      triggerPx: 200,      
+      triggerPx: 300,      
       offTriggerPx: 150,  
       className: 'active'
     });
     watchScrollTrigger({
       target: '.menu-top__container',
-      triggerPx: 200,      
+      triggerPx: 300,      
       offTriggerPx: 150,  
       className: 'active'
     });
@@ -993,6 +1021,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initFormValidation();
     initUniversalActiveMenu('.menu-bottom__nav, .menu-navigation__content', 'active');
     initStarRating('.popup-comment__content .rate-stars', '.star', 'active');
+    disableGlobalCopy();
   });
 });
 
