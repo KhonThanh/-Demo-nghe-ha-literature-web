@@ -5,7 +5,6 @@
 
 .menu-top__logo {
     aspect-ratio: 304 / 90;
-    transition: all 0.4s ease;
     max-width: 300px;
 }
 
@@ -95,6 +94,10 @@
 }
 
 /* css index */
+.sec-banner__item{
+    aspect-ratio: 3 / 1;
+}
+
 .sec-hero__thumb {
     flex: 0 0 35%;
     height: 100%;
