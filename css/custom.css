@@ -98,6 +98,10 @@
     aspect-ratio: 3 / 1;
 }
 
+.sec-banner__container{
+    padding: 20px 0px;
+}
+
 .sec-hero__thumb {
     flex: 0 0 35%;
     height: 100%;
