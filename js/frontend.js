@@ -206,37 +206,35 @@ function initToggleSystem(configs = []) {
 // 🖼️ 2️⃣ Lazy Load + Set Dimensions
 function applyImageEnhancements(root = document) {
   root.querySelectorAll("img").forEach(img => {
-    // Lazy load
-    if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
+    const isBannerImg = img.closest(".js-slider-banner, .hero, .banner");
+    const isHeaderImg = img.closest("header, .header, #header, [class*='header'], .head");
 
-    // Alt text
+    if (isBannerImg) {
+      img.removeAttribute("loading");
+      img.setAttribute("fetchpriority", "high");
+    } else if (isHeaderImg) {
+      img.removeAttribute("loading");
+      img.removeAttribute("fetchpriority");
+    } else {
+      if (!img.hasAttribute("loading")) {
+        img.setAttribute("loading", "lazy");
+      }
+    }
+
     if (!img.hasAttribute("alt") || img.alt.trim() === "") {
       const fileName = img.src.split("/").pop().split(".")[0] || "image";
       img.setAttribute("alt", fileName.replace(/[-_]/g, " "));
     }
 
-    // Hàm set kích thước an toàn
     const setDim = () => {
-      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+      if (img.naturalWidth > 30 && img.naturalHeight > 30) {
         if (!img.hasAttribute("width")) img.setAttribute("width", img.naturalWidth);
         if (!img.hasAttribute("height")) img.setAttribute("height", img.naturalHeight);
       }
     };
 
-    // Nếu ảnh đã load sẵn (cache hoặc render sớm)
-    if (img.complete) setTimeout(setDim, 50);
-    else img.addEventListener("load", setDim);
-
-    // Chỉ xử lý khi xuất hiện trong viewport
-    const io = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setDim();
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: "200px 0px" });
-    io.observe(img);
+    if (img.complete) setDim();
+    else img.addEventListener("load", setDim, { once: true });
   });
 }
 
@@ -377,10 +375,10 @@ function initSwiperSlider({
   if (swiperContainers.length === 0) return null;
 
   const instances = [];
-
   let finalOptions = { ...extraOptions };
   let finalBreakpoints = breakpoints ? { ...breakpoints } : null;
 
+  // Dọn dẹp option grid nếu dùng autoGroupRows thủ công
   if (autoGroupRows > 1) {
     delete finalOptions.grid;
     if (finalBreakpoints) {
@@ -392,7 +390,7 @@ function initSwiperSlider({
   }
 
   swiperContainers.forEach(container => {
-    // 1. Dọn dẹp instance cũ
+    // 1. Dọn dẹp instance Swiper cũ
     if (container.swiper && typeof container.swiper.destroy === 'function') {
       container.swiper.destroy(true, true);
       container.swiper = null;
@@ -402,14 +400,14 @@ function initSwiperSlider({
     const wrapper = container.querySelector('.swiper-wrapper');
     if (!wrapper) return;
 
-    // 2. KHÔI PHỤC DOM GỐC
+    // 2. Khôi phục DOM gốc (phục vụ Re-init hoặc Resize)
     if (!container.dataset.originalHtml) {
       container.dataset.originalHtml = wrapper.innerHTML;
     } else {
       wrapper.innerHTML = container.dataset.originalHtml;
     }
 
-    // Grid layout thủ công (autoGroupRows)
+    // 3. Grid layout thủ công (autoGroupRows) nếu có
     if (autoGroupRows > 1) {
       const originalSlides = Array.from(wrapper.children);
       wrapper.innerHTML = '';
@@ -431,10 +429,10 @@ function initSwiperSlider({
       container.classList.add('js-grouped');
     }
 
-    // 3. ĐẾM SỐ SLIDE THỰC TẾ BAN ĐẦU
+    // 4. Tính toán số lượng slide thực tế và slidesPerView tối đa
     const realSlideCount = wrapper.children.length;
-
     let maxSlidesPerView = Number(slidesPerView) || 1;
+
     if (finalBreakpoints) {
       Object.values(finalBreakpoints).forEach(bp => {
         if (bp.slidesPerView && Number(bp.slidesPerView) > maxSlidesPerView) {
@@ -443,94 +441,52 @@ function initSwiperSlider({
       });
     }
 
-    let finalLoop = isThumb ? false : loop;
-    let finalRewind = isThumb ? false : rewind;
+    // 5. Điều kiện kích hoạt Slide: Nếu số item <= số slidesPerView tối đa thì TẮT loop & autoplay
+    const isEnoughSlides = realSlideCount > maxSlidesPerView;
+    let finalLoop = isThumb ? false : (loop && isEnoughSlides);
+    let finalRewind = isThumb ? false : (rewind && isEnoughSlides);
+    let localAutoplay = isEnoughSlides ? autoplay : false;
 
-    // 4. CLONE THỦ CÔNG NẾU THIẾU SLIDE ĐỂ CHẠY LOOP
-    if (finalLoop && autoGroupRows <= 1) {
-      const originalSlides = Array.from(wrapper.children);
-      const originalCount = originalSlides.length;
-
-      if (originalCount > 0 && originalCount <= maxSlidesPerView) {
-        while (wrapper.children.length <= maxSlidesPerView * 2) {
-          originalSlides.forEach(slide => {
-            const clone = slide.cloneNode(true);
-            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-            if (clone.hasAttribute('id')) clone.removeAttribute('id');
-            wrapper.appendChild(clone);
-          });
-        }
-      }
-    }
-
-    // Xử lý cờ no-auto-slide
-    let localAutoplay = autoplay;
+    // Kiểm tra cờ chặn auto-slide từ HTML
     const scope = wrapperSelector ? container.closest(wrapperSelector) : container.parentElement;
     if (container.classList.contains('no-auto-slide') || (scope && scope.classList.contains('no-auto-slide'))) {
       localAutoplay = false;
     }
 
-    // HÀM TÌM ELEM TỰ ĐỘNG: Tìm trong Scope trước -> không thấy thì tìm toàn trang (Fallback)
+    // Hàm tìm selector theo scope
     const findEl = (selector) => {
       if (!selector) return null;
       if (typeof selector !== 'string') return selector;
       return (scope && scope.querySelector(selector)) || document.querySelector(selector);
     };
 
-    // Scope cho Navigation
+    // Swiper Navigation
     const nav = navigation && (navigation.nextEl || navigation.prevEl) ? {
       ...navigation,
       nextEl: findEl(navigation.nextEl),
       prevEl: findEl(navigation.prevEl),
     } : false;
 
-    // 5. CẤU HÌNH PAGINATION - ẨN DOT CỦA SLIDE CLONE
+    // Swiper Pagination
     let pag = false;
     if (pagination && pagination.el) {
       const pagEl = findEl(pagination.el);
       if (pagEl) {
         pag = {
           ...pagination,
-          el: pagEl,
-          renderBullet: function (index, className) {
-            if (realSlideCount > 0 && index >= realSlideCount) {
-              return '';
-            }
-            if (typeof pagination.renderBullet === 'function') {
-              return pagination.renderBullet(index, className);
-            }
-            return `<span class="${className}"></span>`;
-          }
+          el: pagEl
         };
       }
     }
 
-    // 6. HÀM CẬP NHẬT ACTIVE DOT THEO VÒNG LẶP
-    const updatePaginationSync = (swiper) => {
-      if (realSlideCount > 0 && swiper.pagination && swiper.pagination.bullets) {
-        const bullets = Array.from(swiper.pagination.bullets);
-        if (bullets.length > 0) {
-          const currentRealIndex = swiper.realIndex !== undefined ? swiper.realIndex : swiper.activeIndex;
-          const targetIndex = currentRealIndex % realSlideCount;
-
-          bullets.forEach((bullet, idx) => {
-            if (idx === targetIndex) {
-              bullet.classList.add('swiper-pagination-bullet-active');
-            } else {
-              bullet.classList.remove('swiper-pagination-bullet-active');
-            }
-          });
-        }
-      }
-    };
-
-    // 7. KHỞI TẠO SWIPER
+    // 6. Khởi tạo Swiper
     const swiperOptions = {
       slidesPerView: slidesPerView,
       slidesPerGroup: slidesPerGroup,
       spaceBetween: spaceBetween,
       loop: finalLoop,
       rewind: finalRewind,
+      watchOverflow: true, // Tự động khóa slide & ẩn Nav/Pagination khi số item <= slidesPerView
       navigation: nav,
       pagination: pag,
       breakpoints: finalBreakpoints,
@@ -539,22 +495,6 @@ function initSwiperSlider({
         disableOnInteraction: false,
         ...(typeof localAutoplay === 'object' ? localAutoplay : {})
       } : false,
-
-      on: {
-        ...(extraOptions.on || {}),
-        init: function (swiper) {
-          updatePaginationSync(swiper);
-          if (extraOptions.on && typeof extraOptions.on.init === 'function') {
-            extraOptions.on.init(swiper);
-          }
-        },
-        slideChange: function (swiper) {
-          updatePaginationSync(swiper);
-          if (extraOptions.on && typeof extraOptions.on.slideChange === 'function') {
-            extraOptions.on.slideChange(swiper);
-          }
-        }
-      },
       ...finalOptions
     };
 
@@ -838,30 +778,237 @@ function disableGlobalCopy() {
     const isCtrlOrCmd = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
 
-    if (
-      (isCtrlOrCmd && ['c', 'a', 'u', 's', 'p'].includes(key)) || // Ctrl + C, A (chọn tất cả), U, S, P
-      (isCtrlOrCmd && e.shiftKey && ['i', 'j', 'c'].includes(key)) || // Ctrl + Shift + I/J/C (DevTools)
-      e.key === 'F12'
-    ) {
+    if (isCtrlOrCmd && ['c', 'a'].includes(key)) {
       e.preventDefault();
     }
   }, true);
 }
 
-// Gọi hàm trực tiếp để kích hoạt toàn trang
-disableGlobalCopy();
+/**
+ * COMPREHENSIVE DEV AUDIT TOOL (SEO & ACCESSIBILITY)
+ * Bật/Tắt chế độ kiểm tra: Đổi ENABLE_DEV_AUDIT = false khi up lên Production.
+ */
+const ENABLE_DEV_AUDIT = true;
+
+if (ENABLE_DEV_AUDIT) {
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log(
+      "%c🚀 [FULL SYSTEM AUDIT] Đang quét toàn bộ tiêu chuẩn SEO & Accessibility...",
+      "color: #00e676; font-size: 15px; font-weight: bold;"
+    );
+
+    auditHeadAndMeta();
+    auditHeadingsHierarchy();
+    auditImagesAndMedia();
+    auditFormsAndInputs();
+    auditLinksAndAnchors();
+    auditDOMIntegrity();
+  });
+}
+
+// 1. KIỂM TRA THẺ META & HEAD (SEO & A11Y TOÀN TRANG)
+function auditHeadAndMeta() {
+  // Thẻ html lang
+  const htmlLang = document.documentElement.getAttribute("lang");
+  if (!htmlLang) {
+    console.warn("♿ [A11Y] Thẻ <html> thiếu thuộc tính 'lang'\n👉 Cách fix: Thêm lang='vi' (hoặc 'en') vào thẻ <html> gốc.");
+  }
+
+  // Thẻ <title>
+  const title = document.querySelector("title");
+  if (!title || !title.innerText.trim()) {
+    console.warn("❌ [SEO METADATA] Trang web KHÔNG có thẻ <title> hoặc title bị rỗng!\n👉 Cách fix: Thêm <title>Tên Trang - Thương Hiệu</title> vào thẻ <head>.");
+  } else if (title.innerText.length < 30 || title.innerText.length > 60) {
+    console.warn(`⚠️ [SEO METADATA] Độ dài <title> (${title.innerText.length} ký tự) chưa tối ưu SEO (Chuẩn: 30-60 ký tự).\n👉 Tiêu đề hiện tại: "${title.innerText}"`);
+  }
+
+  // Meta Description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc || !metaDesc.getAttribute("content")?.trim()) {
+    console.warn("❌ [SEO METADATA] Thiếu thẻ <meta name=\"description\">\n👉 Cách fix: Thêm mô tả ngắn gọn nội dung trang (120 - 160 ký tự) vào <head>.");
+  }
+
+  // Viewport & Pinch Zoom Accessibility
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if (!viewport) {
+    console.warn("❌ [MOBILE SEO] Thiếu thẻ meta viewport.\n👉 Cách fix: Thêm <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+  } else {
+    const content = viewport.getAttribute("content") || "";
+    if (content.includes("user-scalable=no") || content.includes("maximum-scale=1")) {
+      console.warn("♿ [A11Y VIEWPORT] Khóa tính năng phóng to màn hình (user-scalable=no hoặc maximum-scale=1)\n👉 Cách fix: Xóa bỏ thuộc tính này để người khiếm thị có thể phóng to trang bằng tay.", viewport);
+    }
+  }
+
+  // Canonical Tag
+  if (!document.querySelector('link[rel="canonical"]')) {
+    console.warn("⚠️ [SEO CANONICAL] Trang web chưa có thẻ link canonical.\n👉 Cách fix: Thêm <link rel=\"canonical\" href=\"https://domain.com/url-hien-tai\"> vào <head>.");
+  }
+}
+
+// 2. KIỂM TRA CẤU TRÚC THẺ HÀNH VĂN (H1 - H6 HIERARCHY)
+function auditHeadingsHierarchy() {
+  const headings = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6"));
+  const h1s = headings.filter(h => h.tagName === "H1");
+
+  // Kiểm tra H1
+  if (h1s.length === 0) {
+    console.warn("❌ [SEO HEADING] Trang web KHÔNG có thẻ <h1> nào!\n👉 Cách fix: Thêm 1 thẻ <h1> duy nhất chứa từ khóa chính của trang.");
+  } else if (h1s.length > 1) {
+    console.warn(`⚠️ [SEO HEADING] Tìm thấy ${h1s.length} thẻ <h1>! Chuẩn SEO chỉ nên có 1 thẻ <h1>.`, h1s);
+  }
+
+  // Kiểm tra nhảy cấp Heading (Ví dụ H2 nhảy thẳng lên H4)
+  let prevLevel = 0;
+  headings.forEach((h) => {
+    const currentLevel = parseInt(h.tagName.replace("H", ""));
+    if (prevLevel > 0 && currentLevel > prevLevel + 1) {
+      console.warn(`♿ [A11Y HEADING] Cấu trúc thẻ tiêu đề bị nhảy cấp từ H${prevLevel} lên H${currentLevel}.\n👉 Cách fix: Đảm bảo thứ tự tiêu đề tăng dần (H1 -> H2 -> H3...).`, h);
+    }
+    prevLevel = currentLevel;
+
+    // Kiểm tra thẻ H bị rỗng
+    if (!h.innerText.trim() && !h.querySelector("img")) {
+      console.warn(`⚠️ [SEO HEADING] Thẻ ${h.tagName} bị rỗng nội dung!`, h);
+    }
+  });
+}
+
+// 3. KIỂM TRA ẢNH & MULTIMEDIA (PERFORMANCE + A11Y)
+function auditImagesAndMedia() {
+  document.querySelectorAll("img").forEach((img, i) => {
+    const src = img.getAttribute("src") || "";
+
+    // 1. Kiểm tra Alt text (Dùng Regex \b để không bị bắt nhầm từ như "âm thanh", "chi nhánh")
+    if (!img.hasAttribute("alt")) {
+      console.warn(`❌ [A11Y IMG #${i + 1}] Thiếu thẻ 'alt'\n👉 Cách fix: Thêm alt="Mô tả ảnh" vào HTML.`, img);
+    } else {
+      const altText = img.getAttribute("alt").toLowerCase();
+      if (/\b(image|picture|anh|hinh)\b/i.test(altText)) {
+        console.warn(`⚠️ [A11Y IMG #${i + 1}] Chữ alt chứa từ dư thừa ("image", "hình", "ảnh").`, img);
+      }
+    }
+
+    // 2. Lazy load
+    if (!img.hasAttribute("loading")) {
+      console.warn(`⚡ [PERFORMANCE IMG #${i + 1}] Thiếu loading="lazy"`, img);
+    }
+
+    // 3. Kiểm tra Size / CLS (Nối thêm điều kiện khung bọc tỉ lệ)
+    const hasParentWrapper = img.closest('.js-slider-ratio, [class*="ratio"], .fill-view, .pos-rel');
+    const hasDimensions = img.hasAttribute("width") && img.hasAttribute("height");
+
+    if (!hasDimensions && !hasParentWrapper) {
+      console.warn(`📐 [CLS LAYOUT IMG #${i + 1}] Thiếu width/height tĩnh VÀ không có khung bọc giữ tỉ lệ!`, img);
+    }
+  });
+
+  // 4. Kiểm tra đường dẫn srcset bị thiếu dấu /
+  document.querySelectorAll("picture source").forEach((source) => {
+    const srcset = source.getAttribute("srcset") || "";
+    if (srcset && !srcset.startsWith("/") && !srcset.startsWith("http") && !srcset.startsWith("data:")) {
+      console.warn(`❌ [PATH ERROR] srcset trong <picture> thiếu dấu '/' ở đầu: "${srcset}"`, source);
+    }
+  });
+}
+
+// 4. KIỂM TRA FORM & TRUY CẬP (A11Y ACCESSIBILITY)
+function auditFormsAndInputs() {
+  document.querySelectorAll("input, textarea, select").forEach((input) => {
+    // Thiếu name
+    if (!input.hasAttribute("name") && input.type !== "submit" && input.type !== "button") {
+      console.warn("❌ [FORM ERROR] Thẻ input thiếu thuộc tính 'name' (Backend sẽ không lấy được data):", input);
+    }
+
+    // Nối Label - Input
+    const id = input.getAttribute("id");
+    let hasAssociatedLabel = false;
+
+    if (id) {
+      hasAssociatedLabel = !!document.querySelector(`label[for="${id}"]`);
+    }
+    // Hoặc input nằm bên trong label
+    if (!hasAssociatedLabel && input.closest("label")) {
+      hasAssociatedLabel = true;
+    }
+    // Hoặc có aria-label
+    if (!hasAssociatedLabel && (input.hasAttribute("aria-label") || input.hasAttribute("aria-labelledby"))) {
+      hasAssociatedLabel = true;
+    }
+
+    if (!hasAssociatedLabel) {
+      console.warn(`♿ [A11Y FORM] Ô input này thiếu thẻ <label> gắn liền hoặc thiếu thuộc tính 'for' / 'aria-label':`, input);
+    }
+  });
+
+  // Nút button không có Text
+  document.querySelectorAll("button").forEach((btn) => {
+    if (!btn.innerText.trim() && !btn.hasAttribute("aria-label") && !btn.querySelector("img, svg")) {
+      console.warn("♿ [A11Y BUTTON] Thẻ <button> không có nội dung chữ hoặc aria-label (Trình đọc màn hình không thể đọc được công dụng nút).", btn);
+    }
+  });
+}
+
+// 5. KIỂM TRA THẺ LINK & ANCHOR TEXT (SEO LINKING)
+function auditLinksAndAnchors() {
+  const genericTexts = ["click here", "xem thêm", "tai day", "tại đây", "read more", "link"];
+
+  document.querySelectorAll("a").forEach((a) => {
+    const href = a.getAttribute("href") || "";
+    const text = a.innerText.trim().toLowerCase();
+
+    // Link rỗng / Giả
+    if (href === "javascript:void()" || href === "javascript:void(0)" || href === "#") {
+      console.warn(`🔗 [SEO LINK] Thẻ <a> sử dụng href giả "${href}". Đổi thành <button> nếu chỉ dùng kích hoạt JS event.`, a);
+    }
+
+    // Anchor Text kém chất lượng
+    if (genericTexts.includes(text)) {
+      console.warn(`⚠️ [SEO ANCHOR TEXT] Neo liên kết quá chung chung ("${text}"). Hãy thay bằng từ khóa cụ thể (Ví dụ: "Xem chi tiết dịch vụ thiết kế").`, a);
+    }
+
+    // Security & Performance với target="_blank"
+    if (a.getAttribute("target") === "_blank") {
+      const rel = a.getAttribute("rel") || "";
+      if (!rel.includes("noopener") && !rel.includes("noreferrer")) {
+        console.warn(`🛡️ [SECURITY LINK] Link mở tab mới (target="_blank") thiếu rel="noopener noreferrer".`, a);
+      }
+    }
+  });
+}
+
+// 6. KIỂM TRA TOÀN VẸN CẤU TRÚC DOM (DUPLICATE ID, TABINDEX)
+function auditDOMIntegrity() {
+  // Trùng lặp ID (Lỗi cực nghiêm trọng ảnh hưởng A11y & JS)
+  const ids = new Set();
+  document.querySelectorAll("[id]").forEach((el) => {
+    const id = el.id.trim();
+    if (id) {
+      if (ids.has(id)) {
+        console.error(`💥 [CRITICAL DUPLICATE ID] Trùng lặp ID "${id}" trong HTML! ID phải là duy nhất trên toàn trang.`, el);
+      } else {
+        ids.add(id);
+      }
+    }
+  });
+
+  // Tabindex > 0 (Được coi là anti-pattern trong Accessibility keyboard navigation)
+  document.querySelectorAll('[tabindex]:not([tabindex="-1"]):not([tabindex="0"])').forEach((el) => {
+    console.warn(`♿ [A11Y KEYBOARD] Thuộc tính tabindex > 0 (${el.getAttribute("tabindex")}) phá vỡ luồng phím Tab tự nhiên của bàn phím. Nên chuyển về tabindex="0".`, el);
+  });
+}
+
 
 // ----------- Vùng gọi biến --------------
 document.addEventListener("DOMContentLoaded", () => {
   includeHTML(() => {
-    // 1. SLIDER BANNER (1 Cột)
+    // 1. SLIDER BANNER (1 Cột - Hero LCP)
     initSwiperSlider({
       mainSelector: '.js-slider-banner',
       wrapperSelector: '.js-slider-wrapper',
       slidesPerView: 1,
       spaceBetween: 0,
       loop: true,
-      autoplay: { delay: 3000, disableOnInteraction: false },
+      autoplay: { delay: 4000, disableOnInteraction: false },
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
@@ -893,12 +1040,12 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-    // 3. SLIDER 4 CỘT (Tin tức, Sản phẩm)
+    // 3. SLIDER 4 CỘT (Tin tức, Sản phẩm, Video)
     initSwiperSlider({
       mainSelector: '.js-slider-4cols',
       wrapperSelector: '.js-slider-wrapper',
       loop: true,
-      autoplay: { delay: 3000, disableOnInteraction: false },
+      autoplay: { delay: 3500, disableOnInteraction: false },
       navigation: {
         nextEl: '.video-dialogue__nav .swiper-button-next',
         prevEl: '.video-dialogue__nav .swiper-button-prev',
@@ -914,7 +1061,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-    // 4. SLIDER LOGO / THƯƠNG HIỆU (Gom 2 hàng thủ công bằng autoGroupRows)
+    // 4. SLIDER LOGO / THƯƠNG HIỆU (Chia 2 hàng thủ công)
     initSwiperSlider({
       mainSelector: '.js-slider-logo',
       wrapperSelector: '.js-slider-wrapper',
@@ -936,7 +1083,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-    // 5. SLIDER ĐIỀU CHỈNH SỐ CỘT THEO RESPONSIVE (Grid to Slide)
+    // 5. SLIDER GRID TO SLIDE (Tự động biến Grid thành Slide trên Mobile)
     initSwiperSlider({
       mainSelector: '.js-slider-grid-to-slide',
       wrapperSelector: '.js-slider-wrapper',
@@ -1005,14 +1152,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     watchScrollTrigger({
       target: '.menu-top__logo',
-      triggerPx: 300,      
-      offTriggerPx: 150,  
+      triggerPx: 300,
+      offTriggerPx: 150,
       className: 'active'
     });
     watchScrollTrigger({
       target: '.menu-top__container',
-      triggerPx: 300,      
-      offTriggerPx: 150,  
+      triggerPx: 300,
+      offTriggerPx: 150,
       className: 'active'
     });
     // ✨ 4️⃣ HIỆU ỨNG ẢNH & REVEAL

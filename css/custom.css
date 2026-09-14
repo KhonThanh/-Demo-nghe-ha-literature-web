@@ -444,7 +444,7 @@
 
 /* css roll to top */
 .btntotop__container {
-    width: 42px;
+    width: 42px !important;
     height: 42px;
     bottom: 30px;
     right: 20px;
